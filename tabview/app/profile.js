@@ -11,6 +11,7 @@ export default function Profile() {
 
       <Text style={styles.name}>Yashaswini</Text>
       <Text>Studying @NIE</Text>
+      
       <Text style={styles.email}>yashaswini@example.com</Text>
 
       <TouchableOpacity style={styles.editBtn}>
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#AEC6CF",
     padding: 20,
   },
   profileImage: {

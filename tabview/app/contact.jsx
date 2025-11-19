@@ -18,7 +18,7 @@ export default function contact(){
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#AEC6CF',
     padding: 20,
   },
   title: {

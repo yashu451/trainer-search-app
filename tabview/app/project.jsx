@@ -16,7 +16,7 @@ export default function project(){
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F2',
+    backgroundColor: '#AEC6CF',
     padding: 20,
   },
   title: {
