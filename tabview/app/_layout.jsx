@@ -10,6 +10,13 @@ export default function RootLayout() {
           title: 'Home',
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
         }}
+         />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'profile',
+          tabBarIcon: ({ color }) => <FontAwesome size={28} name="profile" color={color} />,
+        }}
       />
       <Tabs.Screen
         name="project"
@@ -24,6 +31,7 @@ export default function RootLayout() {
           title: 'contact',
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="phone" color={color} />,
         }}
+        
       />
     </Tabs>
   );
