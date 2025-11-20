@@ -1,26 +1,24 @@
+// data/songs.js
 export const songs = [
   {
-    id: '1',
-    title: 'Song 1',
-    artist: 'Artist 1',
-    cover: 'https://i.scdn.co/image/ab67616d0000b273e6b4d3f1b8d9c5a0e6e7bfa2',
-    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    isTopHit: true,
+    id: 1,
+    title: "Song One",
+    artist: "Artist One",
+    image: { uri: "https://ik.imagekit.io/rrvxomyh1d/kes.jpeg" },
+    audio: { uri: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }
   },
   {
-    id: '2',
-    title: 'Song 2',
-    artist: 'Artist 2',
-    cover: 'https://i.scdn.co/image/ab67616d0000b273d7b2d1c0a6f8d5c6e4e7b9fa',
-    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    isTopHit: false,
+    id: 2,
+    title: "Song Two",
+    artist: "Artist Two",
+    image: { uri: "https://ik.imagekit.io/rrvxomyh1d/pree.jpeg" },
+    audio: { uri: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" }
   },
   {
-    id: '3',
-    title: 'Song 3',
-    artist: 'Artist 3',
-    cover: 'https://i.scdn.co/image/ab67616d0000b273f4c1b7f5d8c6e5a9d3c2f0b2',
-    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    isTopHit: true,
-  },
+    id: 3,
+    title: "Song Three",
+    artist: "Artist Three",
+    image: { uri: "https://ik.imagekit.io/rrvxomyh1d/oo.jpeg" },
+    audio: { uri: "https://soundcloud.com/sk-music-579797960/oorum-blood-masstamilan-dev?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" }
+  }
 ];
