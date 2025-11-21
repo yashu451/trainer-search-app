@@ -1,5 +1,5 @@
 // screens/HomeScreen.js
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  TextInput,
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,6 +20,15 @@ export default function HomeScreen({ navigation }) {
   const { currentSong, isPlaying, playSong, pauseSong, nextSong, prevSong } =
     useContext(PlayerContext);
   const { toggleFavorite, isFavorite } = useFavorites();
+
+  const [searchText, setSearchText] = useState("");
+
+  // Filter songs based on search
+  const filteredSongs = songs.filter(
+    (s) =>
+      s.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      s.artist.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const AlbumCard = ({ item }) => (
     <TouchableOpacity
@@ -47,24 +57,33 @@ export default function HomeScreen({ navigation }) {
       <ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
         <Text style={styles.header}>MusicWave</Text>
 
+        {/* Search Bar */}
         <View style={styles.searchContainer}>
           <Feather name="search" size={20} color="#aaa" />
-          <Text style={styles.searchText}>Search</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            placeholderTextColor="#aaa"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
         </View>
 
+        {/* Featured Section */}
         <Text style={styles.sectionTitle}>Featured</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           style={{ marginBottom: 20 }}
         >
-          {songs.map((s) => (
+          {filteredSongs.map((s) => (
             <AlbumCard key={s.id} item={s} />
           ))}
         </ScrollView>
 
+        {/* All Songs */}
         <Text style={styles.sectionTitle}>Your Songs</Text>
-        {songs.map((item) => (
+        {filteredSongs.map((item) => (
           <TouchableOpacity
             key={item.id}
             style={styles.songRow}
@@ -86,6 +105,7 @@ export default function HomeScreen({ navigation }) {
         ))}
       </ScrollView>
 
+      {/* Mini Player */}
       {currentSong && (
         <View style={styles.miniPlayerContainer}>
           <View style={styles.miniPlayer}>
@@ -129,10 +149,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#2a2a2a",
     borderRadius: 10,
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     marginBottom: 20,
   },
-  searchText: { color: "#aaa", marginLeft: 10 },
+  searchInput: { flex: 1, color: "#fff", marginLeft: 8, fontSize: 16 },
   sectionTitle: { color: "#fff", fontSize: 20, marginBottom: 10, fontWeight: "bold" },
   albumCard: { width: 150, marginRight: 15, backgroundColor: "#1c1c1c", padding: 8, borderRadius: 10 },
   albumImage: { width: "100%", height: 140, borderRadius: 8 },

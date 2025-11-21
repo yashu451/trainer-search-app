@@ -1,63 +1,60 @@
-import React, { useEffect, useState } from 'react';
+// screens/PlayerScreen.js
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { LinearGradient } from 'expo-linear-gradient';
+import { PlayerContext } from '../context/PlayerContext';
 
-export default function PlayerScreen({ route }) {
-  const { song } = route.params;
-  const [sound, setSound] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+export default function PlayerScreen() {
+  const {
+    currentSong,
+    soundObj,
+    isPlaying,
+    playSong,
+    pauseSong,
+    nextSong,
+    prevSong,
+  } = useContext(PlayerContext);
+
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(1);
 
-  async function playPause() {
-    if (!sound) {
-      const { sound: playbackObject, status } = await Audio.Sound.createAsync(
-        { uri: song.audio },
-        { shouldPlay: true }
-      );
-      setSound(playbackObject);
-      setIsPlaying(true);
-      setDuration(status.durationMillis / 1000);
+  if (!currentSong) return null;
 
-      playbackObject.setOnPlaybackStatusUpdate((status) => {
-        if (status.isLoaded) setPosition(status.positionMillis / 1000);
-      });
-    } else {
-      if (isPlaying) {
-        await sound.pauseAsync();
-        setIsPlaying(false);
-      } else {
-        await sound.playAsync();
-        setIsPlaying(true);
-      }
-    }
-  }
+  // Track playback position
+  useEffect(() => {
+    if (!soundObj) return;
 
-  function formatTime(sec) {
+    const interval = setInterval(async () => {
+      try {
+        const status = await soundObj.getStatusAsync();
+        if (status.isLoaded) {
+          setPosition(status.positionMillis / 1000);
+          setDuration(status.durationMillis / 1000 || 1);
+        }
+      } catch (e) {}
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [soundObj]);
+
+  const handlePlayPause = () => {
+    if (isPlaying) pauseSong();
+    else playSong(currentSong);
+  };
+
+  const formatTime = (sec) => {
     const minutes = Math.floor(sec / 60);
     const seconds = Math.floor(sec % 60);
     return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-  }
-
-  useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
+  };
 
   return (
-    <LinearGradient
-      colors={['#1db954', '#191414']}
-      style={styles.container}
-    >
-      <Image source={{ uri: song.cover }} style={styles.cover} />
-      <Text style={styles.title}>{song.title}</Text>
-      <Text style={styles.artist}>{song.artist}</Text>
+    <LinearGradient colors={['#1db954', '#191414']} style={styles.container}>
+      <Image source={currentSong.image} style={styles.cover} />
+      <Text style={styles.title}>{currentSong.title}</Text>
+      <Text style={styles.artist}>{currentSong.artist}</Text>
 
       <Slider
         style={{ width: 300, height: 40 }}
@@ -68,7 +65,7 @@ export default function PlayerScreen({ route }) {
         maximumTrackTintColor="#777"
         thumbTintColor="#fff"
         onSlidingComplete={async (value) => {
-          if (sound) await sound.setPositionAsync(value * 1000);
+          if (soundObj) await soundObj.setPositionAsync(value * 1000);
         }}
       />
 
@@ -78,15 +75,15 @@ export default function PlayerScreen({ route }) {
       </View>
 
       <View style={styles.controls}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={prevSong}>
           <Ionicons name="play-skip-back" size={40} color="#fff" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={playPause} style={styles.playButton}>
+        <TouchableOpacity onPress={handlePlayPause} style={styles.playButton}>
           <Ionicons name={isPlaying ? 'pause' : 'play'} size={40} color="#1db954" />
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={nextSong}>
           <Ionicons name="play-skip-forward" size={40} color="#fff" />
         </TouchableOpacity>
       </View>
