@@ -1,51 +1,79 @@
 // context/PlayerContext.js
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useRef } from "react";
 import { Audio } from "expo-av";
+import { songs } from "../data/songs";
 
 export const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children }) => {
   const [currentSong, setCurrentSong] = useState(null);
-  const [soundObj, setSoundObj] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const sound = useRef(new Audio.Sound());
 
-  useEffect(() => {
-    return () => {
-      // cleanup on unmount
-      if (soundObj) soundObj.unloadAsync();
-    };
-  }, [soundObj]);
-
-  useEffect(() => {
-    (async () => {
-      if (!currentSong) return;
-      try {
-        if (soundObj) {
-          await soundObj.unloadAsync();
-          setSoundObj(null);
-        }
-        // currentSong.audio must be { uri: 'https://...' } or a remote url string
-        const source = currentSong.audio?.uri ? { uri: currentSong.audio.uri } : currentSong.audio;
-        const { sound } = await Audio.Sound.createAsync(source);
-        setSoundObj(sound);
-        await sound.playAsync();
-        setIsPlaying(true);
-      } catch (e) {
-        console.log("play error", e);
+  const playSong = async (song) => {
+    try {
+      if (currentSong?.id !== song.id) {
+        // unload previous sound
+        await sound.current.unloadAsync();
+        await sound.current.loadAsync({ uri: song.audio.uri });
       }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSong]);
+      await sound.current.playAsync();
+      setCurrentSong(song);
+      setIsPlaying(true);
+    } catch (e) {
+      console.log("play error", e);
+    }
+  };
 
-  const togglePlay = async () => {
-    if (!soundObj) return;
-    if (isPlaying) await soundObj.pauseAsync();
-    else await soundObj.playAsync();
-    setIsPlaying((p) => !p);
+  const pauseSong = async () => {
+    try {
+      if (!currentSong) return;
+      await sound.current.pauseAsync();
+      setIsPlaying(false);
+    } catch (e) {
+      console.log("pause error", e);
+    }
+  };
+
+  const stopSong = async () => {
+    try {
+      if (!currentSong) return;
+      await sound.current.stopAsync();
+      setIsPlaying(false);
+      setCurrentSong(null);
+    } catch (e) {
+      console.log("stop error", e);
+    }
+  };
+
+  const nextSong = async () => {
+    if (!currentSong) return;
+    const index = songs.findIndex((s) => s.id === currentSong.id);
+    const nextIndex = (index + 1) % songs.length;
+    await playSong(songs[nextIndex]);
+  };
+
+  const prevSong = async () => {
+    if (!currentSong) return;
+    const index = songs.findIndex((s) => s.id === currentSong.id);
+    const prevIndex = (index - 1 + songs.length) % songs.length;
+    await playSong(songs[prevIndex]);
   };
 
   return (
-    <PlayerContext.Provider value={{ currentSong, setCurrentSong, isPlaying, setIsPlaying, togglePlay }}>
+    <PlayerContext.Provider
+      value={{
+        currentSong,
+        isPlaying,
+        setCurrentSong,
+        setIsPlaying,
+        playSong,
+        pauseSong,
+        stopSong,
+        nextSong,
+        prevSong,
+      }}
+    >
       {children}
     </PlayerContext.Provider>
   );

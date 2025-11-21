@@ -16,24 +16,27 @@ import { useFavorites } from "../context/FavoritesContext";
 import { songs } from "../data/songs";
 
 export default function HomeScreen({ navigation }) {
-  const { currentSong, setCurrentSong, isPlaying, setIsPlaying } = useContext(PlayerContext);
+  const { currentSong, isPlaying, playSong, pauseSong, nextSong, prevSong } =
+    useContext(PlayerContext);
   const { toggleFavorite, isFavorite } = useFavorites();
 
   const AlbumCard = ({ item }) => (
     <TouchableOpacity
       activeOpacity={0.8}
-      onPress={() => {
-        setCurrentSong(item);
-        setIsPlaying(true);
-        navigation.navigate("Player", { song: item });
-      }}
+      onPress={() => playSong(item)}
       style={styles.albumCard}
     >
       <Image source={item.image} style={styles.albumImage} />
       <View style={styles.albumInfo}>
-        <Text style={styles.albumTitle} numberOfLines={1}>{item.title}</Text>
+        <Text style={styles.albumTitle} numberOfLines={1}>
+          {item.title}
+        </Text>
         <TouchableOpacity onPress={() => toggleFavorite(item)}>
-          <Ionicons name={isFavorite(item.id) ? "heart" : "heart-outline"} size={20} color="red" />
+          <Ionicons
+            name={isFavorite(item.id) ? "heart" : "heart-outline"}
+            size={20}
+            color="red"
+          />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -50,8 +53,14 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         <Text style={styles.sectionTitle}>Featured</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
-          {songs.map((s) => <AlbumCard key={s.id} item={s} />)}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ marginBottom: 20 }}
+        >
+          {songs.map((s) => (
+            <AlbumCard key={s.id} item={s} />
+          ))}
         </ScrollView>
 
         <Text style={styles.sectionTitle}>Your Songs</Text>
@@ -59,11 +68,7 @@ export default function HomeScreen({ navigation }) {
           <TouchableOpacity
             key={item.id}
             style={styles.songRow}
-            onPress={() => {
-              setCurrentSong(item);
-              setIsPlaying(true);
-              navigation.navigate("Player", { song: item });
-            }}
+            onPress={() => playSong(item)}
           >
             <Image source={item.image} style={styles.songImage} />
             <View style={{ flex: 1, marginLeft: 10 }}>
@@ -71,25 +76,46 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.songArtist}>{item.artist}</Text>
             </View>
             <TouchableOpacity onPress={() => toggleFavorite(item)}>
-              <Ionicons name={isFavorite(item.id) ? "heart" : "heart-outline"} size={24} color="red" />
+              <Ionicons
+                name={isFavorite(item.id) ? "heart" : "heart-outline"}
+                size={24}
+                color="red"
+              />
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
       {currentSong && (
-        <TouchableOpacity style={styles.miniPlayerContainer} onPress={() => navigation.navigate("Player", { song: currentSong })}>
+        <View style={styles.miniPlayerContainer}>
           <View style={styles.miniPlayer}>
             <Image source={currentSong.image} style={styles.miniImage} />
             <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={styles.miniTitle} numberOfLines={1}>{currentSong.title}</Text>
+              <Text style={styles.miniTitle} numberOfLines={1}>
+                {currentSong.title}
+              </Text>
               <Text style={styles.miniArtist}>{currentSong.artist}</Text>
             </View>
-            <TouchableOpacity onPress={() => setIsPlaying((p) => !p)}>
+
+            {/* Previous */}
+            <TouchableOpacity onPress={prevSong} style={{ marginHorizontal: 5 }}>
+              <Ionicons name="play-skip-back" size={28} color="#fff" />
+            </TouchableOpacity>
+
+            {/* Play / Pause */}
+            <TouchableOpacity
+              onPress={() => (isPlaying ? pauseSong() : playSong(currentSong))}
+              style={{ marginHorizontal: 5 }}
+            >
               <Ionicons name={isPlaying ? "pause" : "play"} size={28} color="#fff" />
             </TouchableOpacity>
+
+            {/* Next */}
+            <TouchableOpacity onPress={nextSong} style={{ marginHorizontal: 5 }}>
+              <Ionicons name="play-skip-forward" size={28} color="#fff" />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </View>
       )}
     </LinearGradient>
   );
@@ -98,7 +124,14 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 15 },
   header: { fontSize: 28, fontWeight: "bold", color: "#fff", marginBottom: 20 },
-  searchContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#2a2a2a", borderRadius: 10, padding: 10, marginBottom: 20 },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2a2a2a",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 20,
+  },
   searchText: { color: "#aaa", marginLeft: 10 },
   sectionTitle: { color: "#fff", fontSize: 20, marginBottom: 10, fontWeight: "bold" },
   albumCard: { width: 150, marginRight: 15, backgroundColor: "#1c1c1c", padding: 8, borderRadius: 10 },
