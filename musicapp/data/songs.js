@@ -9,15 +9,15 @@ export const songs = [
   },
   {
     id: 2,
-    title: "Preetiya hesare ninu",
+    title: "Preetiya Hesare Ninu",
     artist: "Raghu Dixit",
     image: { uri: "https://ik.imagekit.io/rrvxomyh1d/pree.jpeg" },
     audio: { uri: "https://ik.imagekit.io/rrvxomyh1d/prret.mp3" }
   },
   {
     id: 3,
-    title: "Oorum blood",
-    artist: "Sai abayankar",
+    title: "Oorum Blood",
+    artist: "Sai Abayankar",
     image: { uri: "https://ik.imagekit.io/rrvxomyh1d/oo.jpeg" },
     audio: { uri: "https://ik.imagekit.io/rrvxomyh1d/oor.mp3" }
   }

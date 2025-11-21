@@ -2,6 +2,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function ProfileScreen() {
   return (
@@ -26,7 +27,7 @@ export default function ProfileScreen() {
       <View style={styles.menuSection}>
         <MenuItem icon="heart" title="Favorite Songs" />
         <MenuItem icon="settings" title="Settings" />
-        <MenuItem icon="lock-closed" title="Privacy" />
+        <MaterialIcons name="private-connectivity" size={24} color="black"  title="Privacy"/>
         <MenuItem icon="help-circle" title="Help & Support" />
       </View>
 

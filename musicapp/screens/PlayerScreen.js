@@ -22,32 +22,34 @@ export default function PlayerScreen() {
 
   if (!currentSong) return null;
 
-  // Track playback position
+  // Update playback position and duration
   useEffect(() => {
     if (!soundObj) return;
 
-    const interval = setInterval(async () => {
-      try {
-        const status = await soundObj.getStatusAsync();
-        if (status.isLoaded) {
-          setPosition(status.positionMillis / 1000);
-          setDuration(status.durationMillis / 1000 || 1);
-        }
-      } catch (e) {}
-    }, 500);
+    // Callback whenever playback status changes
+    const onPlaybackStatusUpdate = (status) => {
+      if (status.isLoaded) {
+        setPosition(status.positionMillis / 1000);
+        setDuration(status.durationMillis / 1000);
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, [soundObj]);
+    soundObj.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+
+    return () => {
+      if (soundObj) soundObj.setOnPlaybackStatusUpdate(null);
+    };
+  }, [soundObj, currentSong]); // re-run when song changes
 
   const handlePlayPause = () => {
     if (isPlaying) pauseSong();
     else playSong(currentSong);
   };
 
-  const formatTime = (sec) => {
-    const minutes = Math.floor(sec / 60);
-    const seconds = Math.floor(sec % 60);
-    return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' + secs : secs}`;
   };
 
   return (
